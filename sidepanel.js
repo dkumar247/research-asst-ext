@@ -15,13 +15,30 @@ async function processContent(operation) {
         showResult(`<div class="loading">Processing ${operation}...</div>`);
 
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-        const [{ result }] = await chrome.scripting.executeScript({
-            target: { tabId: tab.id },
-            function: () => window.getSelection().toString()
-        });
 
-        if (!result) {
-            showResult('Please select some text first');
+        // Check if we can inject scripts into this tab
+        if (!tab.url || tab.url.startsWith('chrome://') || tab.url.startsWith('chrome-extension://') ||
+            tab.url.startsWith('edge://') || tab.url.startsWith('about:') ||
+            tab.url.startsWith('file://') && !tab.url.endsWith('.html')) {
+            showResult('Cannot analyze content on this type of page. Please navigate to a regular webpage.');
+            return;
+        }
+
+        let result;
+        try {
+            const response = await chrome.scripting.executeScript({
+                target: { tabId: tab.id },
+                function: () => window.getSelection().toString()
+            });
+            result = response[0].result;
+        } catch (scriptError) {
+            // Handle cases where script injection fails
+            showResult('Unable to access content on this page. Please try on a different webpage.');
+            return;
+        }
+
+        if (!result || result.trim() === '') {
+            showResult('Please select some text on the page first, then click the button.');
             return;
         }
 
