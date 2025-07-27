@@ -97,15 +97,21 @@ function showSuggestions(text) {
 }
 
 function formatSuggestions(text) {
-    // Convert bullet points and headings to HTML
+    // First, identify main section headers (those followed by a colon and newline with bullets)
     let formatted = text
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Bold text
-        .replace(/\* (.*?)(?=\n|$)/g, '<li>$1</li>') // Bullet points
-        .replace(/\n\n/g, '</ul><ul>') // Group bullet points
-        .replace(/^/, '<ul>')
-        .replace(/$/, '</ul>')
-        .replace(/<ul><\/ul>/g, '') // Remove empty ul tags
-        .replace(/\n(?!<)/g, '<br>'); // Line breaks for non-list items
+        // Convert main section headers to H4 tags
+        .replace(/\*\*(Related Topics|Further Reading|Research Questions|Keywords):\*\*/g, '<h4>$1:</h4>')
+        // Convert other bold items (sub-headers within bullets) to span with class
+        .replace(/\*\*(.*?)\*\*/g, '<span class="sub-header">$1</span>')
+        // Convert bullet points
+        .replace(/^\* (.*?)$/gm, '<li>$1</li>')
+        // Group consecutive li elements in ul
+        .replace(/(<li>.*<\/li>\n?)(?=<li>)/g, '$1')
+        .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
+        // Clean up multiple ul tags
+        .replace(/<\/ul>\n<ul>/g, '\n')
+        // Line breaks
+        .replace(/\n(?!<)/g, '<br>');
 
     return formatted;
 }
