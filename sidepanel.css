@@ -127,6 +127,12 @@ button:hover {
     font-size: 1em;
 }
 
+.suggestions-content p {
+    color: #424242;
+    line-height: 1.6;
+    margin: 10px 0;
+}
+
 .suggestions-content strong {
     color: #1a73e8;
     display: block;

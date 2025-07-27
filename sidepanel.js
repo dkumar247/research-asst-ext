@@ -97,21 +97,44 @@ function showSuggestions(text) {
 }
 
 function formatSuggestions(text) {
-    // First, identify main section headers (those followed by a colon and newline with bullets)
-    let formatted = text
-        // Convert main section headers to H4 tags
-        .replace(/\*\*(Related Topics|Further Reading|Research Questions|Keywords):\*\*/g, '<h4>$1:</h4>')
-        // Convert other bold items (sub-headers within bullets) to span with class
-        .replace(/\*\*(.*?)\*\*/g, '<span class="sub-header">$1</span>')
-        // Convert bullet points
-        .replace(/^\* (.*?)$/gm, '<li>$1</li>')
-        // Group consecutive li elements in ul
-        .replace(/(<li>.*<\/li>\n?)(?=<li>)/g, '$1')
-        .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
-        // Clean up multiple ul tags
-        .replace(/<\/ul>\n<ul>/g, '\n')
-        // Line breaks
-        .replace(/\n(?!<)/g, '<br>');
+    // Split into lines for easier processing
+    const lines = text.split('\n');
+    let formatted = '';
+    let inList = false;
+
+    lines.forEach(line => {
+        // Check if this line starts with a bullet point
+        if (line.trim().startsWith('* ')) {
+            if (!inList) {
+                formatted += '<ul>';
+                inList = true;
+            }
+            // Process the bullet point content
+            let listContent = line.trim().substring(2);
+            // Replace bold text within bullets with sub-header styling
+            listContent = listContent.replace(/\*\*(.*?)\*\*/g, '<span class="sub-header">$1</span>');
+            formatted += `<li>${listContent}</li>`;
+        } else {
+            // Not a bullet point
+            if (inList) {
+                formatted += '</ul>';
+                inList = false;
+            }
+
+            // Check if entire line is bold (main header)
+            if (line.trim().match(/^\*\*.*\*\*$/)) {
+                formatted += line.replace(/\*\*(.*)\*\*/, '<h4>$1</h4>');
+            } else if (line.trim()) {
+                // Regular text line
+                formatted += `<p>${line}</p>`;
+            }
+        }
+    });
+
+    // Close any open list
+    if (inList) {
+        formatted += '</ul>';
+    }
 
     return formatted;
 }
