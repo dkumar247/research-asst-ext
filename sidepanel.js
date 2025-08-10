@@ -70,15 +70,26 @@ async function processContent(operation) {
 async function saveNotes() {
     const notes = document.getElementById('notes').value;
     chrome.storage.local.set({ 'researchNotes': notes }, function () {
-        alert('Notes saved succesfully.');
+        // Show a temporary success message
+        const btn = document.getElementById('saveNotesBtn');
+        const originalText = btn.textContent;
+        btn.textContent = '✓ Saved!';
+        btn.style.backgroundColor = '#4CAF50';
+
+        setTimeout(() => {
+            btn.textContent = originalText;
+            btn.style.backgroundColor = '';
+        }, 2000);
     });
+
 }
 
 function showResult(content) {
     document.getElementById('results').innerHTML =
         `<div class="result-item">
-            <div class="result-content">${content}</div>
-        </div>`
+                <div class="result-content" id="resultContent"></div>
+            </div>`;
+    animateContent('resultContent', content);
 }
 
 function showSuggestions(text) {
@@ -87,12 +98,17 @@ function showSuggestions(text) {
     document.getElementById('results').innerHTML =
         `<div class="suggestions-container">
             <h3>Research Suggestions</h3>
-            <div class="suggestions-content">${formattedContent}</div>
-            <button class="add-to-notes-btn" id="addToNotesBtn">Add to Notes</button>
+            <div class="suggestions-content" id="suggestionsContent"></div>
+            <button class="add-to-notes-btn" id="addToNotesBtn" style="opacity: 0; transition: opacity 0.5s;">Add to Notes</button>
         </div>`;
 
-    document.getElementById('addToNotesBtn').addEventListener('click', () => {
-        addSuggestionsToNotes(text);
+    // Animate the content instead of showing it immediately
+    animateContent('suggestionsContent', formattedContent, () => {
+        const btn = document.getElementById('addToNotesBtn');
+        btn.style.opacity = '1';
+        btn.addEventListener('click', () => {
+            addSuggestionsToNotes(text);
+        });
     });
 }
 
@@ -153,4 +169,40 @@ function addSuggestionsToNotes() {
     // Scroll to bottom of textarea to show new content
     const textarea = document.getElementById('notes');
     textarea.scrollTop = textarea.scrollHeight;
+}
+
+function animateContent(elementId, content, callback) {
+    const element = document.getElementById(elementId);
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = content;
+
+    const nodes = Array.from(tempDiv.childNodes);
+    let currentIndex = 0;
+
+    function showNextNode() {
+        if (currentIndex < nodes.length) {
+            const node = nodes[currentIndex].cloneNode(true);
+
+            if (node.nodeType === Node.ELEMENT_NODE) {
+                node.style.opacity = '0';
+                element.appendChild(node);
+
+                setTimeout(() => {
+                    node.style.transition = 'opacity 0.3s ease-in';
+                    node.style.opacity = '1';
+                }, 10);
+
+                currentIndex++;
+                setTimeout(showNextNode, 150);
+            } else {
+                element.appendChild(node);
+                currentIndex++;
+                showNextNode();
+            }
+        } else if (callback) {
+            callback();
+        }
+    }
+
+    showNextNode();
 }
