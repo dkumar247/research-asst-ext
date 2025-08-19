@@ -73,7 +73,7 @@ async function saveNotes() {
         // Show a temporary success message
         const btn = document.getElementById('saveNotesBtn');
         const originalText = btn.textContent;
-        btn.textContent = '✓ Saved!';
+        btn.textContent = 'Saved!';
         btn.style.backgroundColor = '#4CAF50';
 
         setTimeout(() => {
