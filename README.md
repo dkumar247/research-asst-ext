@@ -8,6 +8,10 @@ A Chrome extension that provides AI-powered text summarization and research capa
 - Research notes with local storage
 - Side panel interface for easy access
 - Integration with backend AI service
+  
+## Demo Video
+
+[![Watch the video](https://img.youtube.com/vi/otuJlxIWG94/hqdefault.jpg)](https://youtu.be/otuJlxIWG94)
 
 ## Prerequisites
 
