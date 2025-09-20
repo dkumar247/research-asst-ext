@@ -16,7 +16,7 @@ A Chrome extension that provides AI-powered text summarization and research capa
 ## Prerequisites
 
 - Google Chrome or Chromium-based browser
-- Backend service running on `http://localhost:8080`
+- Backend service running on `http://localhost:8080` (Backend repo available here https://github.com/dkumar247/research-assistant)
 
 ## Installation
 
