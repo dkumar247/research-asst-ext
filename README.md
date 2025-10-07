@@ -9,7 +9,7 @@ A Chrome extension that provides AI-powered text summarization and research capa
 - Side panel interface for easy access
 - Integration with backend AI service
   
-## Demo Video
+## Demo Video (click on below image)
 
 [![Watch the video](https://img.youtube.com/vi/otuJlxIWG94/hqdefault.jpg)](https://youtu.be/otuJlxIWG94)
 
