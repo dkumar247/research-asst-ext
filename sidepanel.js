@@ -42,7 +42,7 @@ async function processContent(operation) {
             return;
         }
 
-        const response = await fetch('http://localhost:8080/api/research/process', {
+        const response = await fetch(`${config.API_BASE_URL}/api/research/process`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ content: result, operation: operation })
